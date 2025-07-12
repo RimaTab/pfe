@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #3a5a40;
+  --primary-light: #3a5a40;
+  --primary-dark: #3a5a40;
+  --secondary: #4ecdc4;
+  --background: #7c7777;
+  --foreground: #333333;
+  --gray-light: #f8f9fa;
+  --gray-medium: #e9ecef;
+  --gray-dark: #dee2e6;
+  --danger: #3a5a40;
+  --button-color: #3a5a40;
+  --button-hover: #2d4530;
+  --warning: #ffc107;
+  --success: #3a5a40;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Theme variables */
+:root {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  --font-mono: monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #fcfbfb;
+  }
+}
+
+body {
+  background: #ffffff;
+  color:#000000;
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+
+}
+
+/* Variables de couleur personnalisées */
+:root {
+  --color-red-500: #3a5a40;
+  --color-red-600: #3a5a40;
+  --color-rose-500: #3a5a40;
+  --color-rose-800: #3a5a40;
+  --color-gray-50: oklch(98.5% 0.002 247.839);
+  --color-gray-600: #3a5a40;
+  --color-gray-700: #3a5a40;
+  --color-gray-800: #3a5a40;
+  --color-gray-900: #3a5a40;
+  --color-white: #fff;
+  --spacing: 0.25rem;
+}
+
+/* Classes personnalisées */
+.text-rose-800 {
+  color: var(--color-rose-800) !important;
+}
+
+.bg-red-500 {
+  background-color: var(--color-red-500) !important;
+}
+
+.text-red-500 {
+  color: var(--color-red-500) !important;
+}
+
+.text-red-600 {
+  color: var(--color-red-600) !important;
+}
+
+.text-gray-600 {
+  color: var(--color-gray-600) !important;
+}
+
+.text-gray-700 {
+  color: var(--color-gray-700) !important;
+}
+
+.text-gray-800 {
+  color: var(--color-gray-800) !important;
+}
+
+.text-gray-900 {
+  color: var(--color-gray-900) !important;
+}

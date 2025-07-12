@@ -1,0 +1,131 @@
+.container {
+  padding: 6rem 2rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.programmeHeader {
+  margin-bottom: 2rem;
+  position: relative;
+  border-left: 2px solid #3a5a40;
+  padding-left: 1.5rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--button-color);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: #666;
+  max-width: 80%;
+  line-height: 1.6;
+}
+
+.menuGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.menuButton {
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 20px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.menuButton:hover {
+  background-color: #e0e0e0;
+}
+
+.menuButton.selected {
+  background-color: var(--button-color);
+  color: white;
+}
+
+.customizationSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.imageContainer {
+  position: relative;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.menuImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.imageDimensions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.customizationText {
+  padding: 1rem;
+}
+
+.customizationTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.customizationDescription {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.customizeButton {
+  background-color: var(--button-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.customizeButton:hover {
+  background-color: var(--button-hover);
+}
+
+@media (max-width: 768px) {
+  .customizationSection {
+    grid-template-columns: 1fr;
+  }
+  
+  .subtitle {
+    max-width: 100%;
+  }
+  
+  .programmeHeader {
+    border-left: none;
+    padding-left: 0;
+  }
+}

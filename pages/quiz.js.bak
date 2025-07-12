@@ -1,0 +1,404 @@
+import { useState, useEffect } from 'react';
+import Head from 'next/head';
+import { Check, X } from 'lucide-react';
+import { useRouter } from 'next/router';
+
+export default function Quiz() {
+  const router = useRouter();
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [answers, setAnswers] = useState({});
+  const [showResult, setShowResult] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  // Initialize selected option from answers if it exists
+  useEffect(() => {
+    if (answers[currentQuestion] !== undefined) {
+      setSelectedOption(answers[currentQuestion]);
+    } else {
+      setSelectedOption(questions[currentQuestion].type === 'number' ? '' : null);
+    }
+  }, [currentQuestion, answers]);
+
+  const questions = [
+    {
+      id: 'objective',
+      type: 'objective',
+      question: "Quel est votre objectif principal ?",
+      options: [
+        "Perdre du poids",
+        "Prendre du muscle",
+        "Être en meilleure santé",
+        "Améliorer mes performances sportives"
+      ],
+      description: "Choisissez l'objectif qui vous correspond le mieux"
+    },
+    {
+      id: 'age',
+      type: 'number',
+      inputType: 'number',
+      question: "Quel est votre âge ?",
+      placeholder: "30",
+      min: 1,
+      max: 120
+    },
+    {
+      id: 'height',
+      type: 'number',
+      inputType: 'number',
+      question: "Quelle est votre taille ?",
+      placeholder: "175",
+      min: 100,
+      max: 250,
+      unit: 'cm'
+    },
+    {
+      id: 'weight',
+      type: 'number',
+      inputType: 'number',
+      question: "Quel est votre poids actuel ?",
+      placeholder: "70",
+      min: 30,
+      max: 300,
+      unit: 'kg'
+    },
+    {
+      id: 'activity',
+      type: 'activity',
+      question: "Quel est votre niveau d'activité physique ?",
+      options: [
+        "Sédentaire (peu ou pas d'exercice)",
+        "Légèrement actif (1-3 jours/semaine)",
+        "Modérément actif (3-5 jours/semaine)",
+        "Très actif (6-7 jours/semaine)",
+        "Extrêmement actif (sportif professionnel ou travail physique)"
+      ],
+      description: "Sélectionnez le niveau qui correspond le mieux à votre routine"
+    }
+  ];
+
+  const handleOptionSelect = (optionIndex) => {
+    setSelectedOption(optionIndex);
+  };
+
+  const handlePrev = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+      // Pre-fill the previous question's answer if it exists
+      setSelectedOption(answers[currentQuestion - 1] !== undefined ? answers[currentQuestion - 1] : null);
+    }
+  };
+
+  const handleNext = () => {
+    // Save the current answer
+    setAnswers({
+      ...answers,
+      [currentQuestion]: selectedOption
+    });
+
+    // Move to next question or show results
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      // Pre-fill the next question's answer if it exists
+      setSelectedOption(answers[currentQuestion + 1] !== undefined ? answers[currentQuestion + 1] : null);
+    } else {
+      // Submit the form or show results
+      console.log('Form submitted:', { ...answers, [currentQuestion]: selectedOption });
+      setShowResult(true);
+    }
+  };
+
+  const restartQuiz = () => {
+    setCurrentQuestion(0);
+    setSelectedOption(null);
+    setAnswers({});
+    setShowResult(false);
+    setError('');
+  };
+
+  if (showResult) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">Résultats du Quiz</h1>
+          <div className="text-5xl font-bold text-green-600 mb-6">
+            {score} / {questions.length}
+          </div>
+          <p className="text-gray-600 mb-8">
+            {score === questions.length 
+              ? 'Félicitations ! Vous avez répondu correctement à toutes les questions !' 
+              : score > questions.length / 2 
+                ? 'Bon travail ! Vous avez une bonne connaissance de la nutrition.'
+                : 'Continuez à apprendre ! Vous pouvez faire mieux la prochaine fois.'}
+          </p>
+          <button
+            onClick={restartQuiz}
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors"
+          >
+            Recommencer le quiz
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const renderQuestion = () => {
+    const question = questions[currentQuestion];
+    
+    if (question.type === 'objective' || question.type === 'activity') {
+      return (
+        <div className="space-y-4 mb-8">
+          {question.description && (
+            <p className="text-gray-500 text-center mb-6">{question.description}</p>
+          )}
+          {question.options.map((option, index) => (
+            <div 
+              key={index}
+              onClick={() => handleOptionSelect(index)}
+              className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                selectedOption === index 
+                  ? 'border-green-500 bg-green-50 shadow-sm' 
+                  : 'border-gray-200 hover:border-green-300'
+              }`}
+            >
+              <div className="flex items-center">
+                <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center mr-3 transition-colors ${
+                  selectedOption === index 
+                    ? 'border-green-500 bg-green-500' 
+                    : 'border-gray-300'
+                }`}>
+                  {selectedOption === index && (
+                    <Check className="w-4 h-4 text-white" />
+                  )}
+                </div>
+                <span className="text-gray-800">{option}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    } else if (question.inputType === 'number') {
+      return (
+        <div className="mb-8">
+          {question.description && (
+            <p className="text-gray-500 text-center mb-6">{question.description}</p>
+          )}
+          <div className="relative max-w-xs mx-auto">
+            <input
+              type="number"
+              value={selectedOption || ''}
+              onChange={(e) => handleOptionSelect(e.target.value)}
+              className="w-full p-4 text-3xl text-center border-b-2 border-gray-300 focus:border-green-500 outline-none bg-transparent"
+              placeholder={question.placeholder}
+              min={question.min}
+              max={question.max}
+              step={question.type === 'age' ? '1' : '0.1'}
+            />
+            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">
+              {question.unit || ''}
+            </span>
+          </div>
+          <div className="flex justify-between mt-2 text-sm text-gray-400">
+            <span>{question.min}+</span>
+            <span>max {question.max}</span>
+          </div>
+        </div>
+      );
+    }
+    
+    return null;
+  };
+
+  const renderResults = () => {
+    const results = calculateResults();
+    const objective = questions[0].options[answers[0]] || "Votre objectif";
+    const activity = questions[4].options[answers[4]] || "Votre niveau d'activité";
+    
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Votre plan personnalisé</h1>
+            <p className="text-gray-600">Basé sur vos réponses, voici nos recommandations</p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="p-8">
+              <div className="text-center mb-8">
+                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="w-12 h-12 text-green-600" />
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">Profil complet</h2>
+                <p className="text-gray-600">
+                  Voici vos recommandations personnalisées
+                </p>
+              </div>
+
+              <div className="space-y-6 mb-10">
+                <div className="bg-green-50 p-6 rounded-xl">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Vos objectifs</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <p className="text-sm text-gray-500">Objectif principal</p>
+                      <p className="font-medium">{objective}</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <p className="text-sm text-gray-500">Niveau d'activité</p>
+                      <p className="font-medium">{activity}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 p-6 rounded-xl">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Vos besoins nutritionnels</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                      <p className="text-sm text-gray-500">Calories quotidiennes</p>
+                      <p className="text-2xl font-bold text-blue-600">{results.goalCalories}</p>
+                      <p className="text-xs text-gray-500">{results.goalDescription}</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                      <p className="text-sm text-gray-500">Protéines (quotidien)</p>
+                      <p className="text-2xl font-bold text-blue-600">{results.proteinGrams}g</p>
+                      <p className="text-xs text-gray-500">Recommandé pour votre poids</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                      <p className="text-sm text-gray-500">Eau (quotidien)</p>
+                      <p className="text-2xl font-bold text-blue-600">{results.waterIntake}ml</p>
+                      <p className="text-xs text-gray-500">Soit {Math.round(results.waterIntake / 250)} verres</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-50 p-6 rounded-xl">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Votre IMC</h3>
+                  <div className="text-center">
+                    <div className="inline-flex items-baseline">
+                      <span className="text-4xl font-bold text-yellow-600">{results.bmi}</span>
+                      <span className="ml-2 text-gray-500">kg/m²</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">
+                      {results.bmi < 18.5 ? 'Poids insuffisant' : 
+                       results.bmi < 25 ? 'Poids normal' :
+                       results.bmi < 30 ? 'Surpoids' : 'Obésité'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-10 text-center">
+                <button
+                  onClick={() => router.push('/')}
+                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-full transition-colors flex items-center mx-auto"
+                >
+                  Commencer mon parcours
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </button>
+                
+                <button
+                  onClick={restartQuiz}
+                  className="mt-4 text-sm text-gray-600 hover:text-gray-800 flex items-center mx-auto"
+                >
+                  <ArrowLeft className="mr-1 w-4 h-4" />
+                  Modifier mes réponses
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (showResult) {
+    return renderResults();
+  }
+
+  // Show loading state if submitting
+  if (isSubmitting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Création de votre plan personnalisé...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render the quiz UI
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <Head>
+        <title>Profil | RASHAQA</title>
+        <meta name="description" content="Créez votre profil personnalisé" />
+      </Head>
+
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="p-6 sm:p-8">
+            <div className="mb-8">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-green-600 h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                ></div>
+              </div>
+              <div className="flex justify-between mt-2 text-sm text-gray-500">
+                <span>Étape {currentQuestion + 1} sur {questions.length}</span>
+              </div>
+            </div>
+
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              {questions[currentQuestion].question}
+            </h2>
+
+            {renderQuestion()}
+            
+            {error && (
+              <div className="text-red-500 text-sm text-center mb-4">
+                {error}
+              </div>
+            )}
+
+            <div className="flex justify-between items-center mt-10">
+              <button
+                onClick={handlePrev}
+                disabled={currentQuestion === 0}
+                className={`px-6 py-2 rounded-full font-medium ${
+                  currentQuestion > 0 
+                    ? 'text-gray-600 hover:bg-gray-100' 
+                    : 'text-gray-300 cursor-not-allowed'
+                }`}
+              >
+                ← Précédent
+              </button>
+              
+              <button
+                onClick={handleNext}
+                disabled={isSubmitting || selectedOption === null || selectedOption === ''}
+                className={`px-6 py-3 rounded-full font-medium flex items-center ${
+                  !isSubmitting && selectedOption !== null && selectedOption !== ''
+                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                } transition-colors`}
+              >
+                {isSubmitting ? (
+                  'Chargement...'
+                ) : currentQuestion === questions.length - 1 ? (
+                  'Voir mes résultats'
+                ) : (
+                  'Suivant'
+                )}
+                {!isSubmitting && currentQuestion < questions.length - 1 && (
+                  <ChevronRight className="ml-1 w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
