@@ -38,7 +38,6 @@ export default function Navbar() {
         <div className="hidden md:flex space-x-7 text-sm text-gray-700">
           <Link href="/programme">Programme</Link>
           <Link href="/services">Services</Link>
-          <Link href="/conseils">Conseils</Link>
           <div className="relative" ref={recettesMenuRef}>
             <button
               onClick={() => {
